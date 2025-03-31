@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>IT Support Assistant</title>
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css">
+ <style>
+   body {
+     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+     padding: 20px;
+     background-color: #f8f9fa;
+   }
+   
+   .card {
+     margin-bottom: 20px;
+     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+     border-radius: 8px;
+     overflow: hidden;
+   }
+   
+   .card-header {
+     background-color: #0d6efd;
+     color: white;
+     font-weight: bold;
+     padding: 12px 20px;
+   }
+   
+   .card-body {
+     padding: 20px;
+   }
+   
+   .btn-primary {
+     background-color: #0d6efd;
+     border-color: #0d6efd;
+   }
+   
+   .btn-danger {
+     background-color: #dc3545;
+     border-color: #dc3545;
+   }
+   
+   .btn-warning {
+     background-color: #ffc107;
+     border-color: #ffc107;
+     color: #000;
+   }
+   
+   .btn-success {
+     background-color: #198754;
+     border-color: #198754;
+   }
+   
+   .progress {
+     height: 20px;
+     margin-bottom: 10px;
+   }
+   
+   .progress-bar {
+     line-height: 20px;
+   }
+   
+   .table th {
+     font-weight: 600;
+   }
+   
+   .badge {
+     font-size: 0.8rem;
+     padding: 5px 10px;
+   }
+   
+   .system-info-item {
+     margin-bottom: 10px;
+   }
+   
+   .system-info-label {
+     font-weight: bold;
+   }
+   
+   .network-interface {
+     margin-bottom: 15px;
+     padding: 10px;
+     border: 1px solid #dee2e6;
+     border-radius: 5px;
+     background-color: #f8f9fa;
+   }
+   
+   .loading-spinner {
+     display: inline-block;
+     width: 1rem;
+     height: 1rem;
+     border: 0.2em solid currentColor;
+     border-right-color: transparent;
+     border-radius: 50%;
+     animation: spinner-border .75s linear infinite;
+   }
+   
+   .app-list-item {
+     padding: 10px;
+     border-bottom: 1px solid #dee2e6;
+   }
+   
+   .app-list-item:hover {
+     background-color: #f1f3f5;
+   }
+   
+   .app-list-item .close-btn {
+     visibility: hidden;
+   }
+   
+   .app-list-item:hover .close-btn {
+     visibility: visible;
+   }
+   
+   .issue-item {
+     padding: 15px;
+     margin-bottom: 10px;
+     border-radius: 5px;
+     border-left: 4px solid #0d6efd;
+   }
+   
+   .issue-item.high {
+     border-left-color: #dc3545;
+     background-color: #f8d7da;
+   }
+   
+   .issue-item.medium {
+     border-left-color: #ffc107;
+     background-color: #fff3cd;
+   }
+   
+   .issue-item.low {
+     border-left-color: #0dcaf0;
+     background-color: #d1ecf1;
+   }
+   
+   .nav-tabs .nav-link {
+     color: #495057;
+   }
+   
+   .nav-tabs .nav-link.active {
+     color: #0d6efd;
+     font-weight: bold;
+   }
+   
+   .chart-container {
+     position: relative;
+     height: 300px;
+     width: 100%;
+   }
+   
+   .hardware-metric {
+     display: flex;
+     align-items: center;
+     margin-bottom: 15px;
+   }
+   
+   .hardware-metric-icon {
+     font-size: 24px;
+     margin-right: 15px;
+     width: 40px;
+     text-align: center;
+   }
+   
+   .hardware-metric-value {
+     font-size: 18px;
+     font-weight: bold;
+   }
+   
+   .hardware-metric-label {
+     color: #6c757d;
+     font-size: 14px;
+   }
+   
+   .task-item {
+     padding: 10px;
+     border-bottom: 1px solid #dee2e6;
+   }
+   
+   .notification {
+     position: fixed;
+     top: 20px;
+     right: 20px;
+     padding: 15px 20px;
+     background-color: #198754;
+     color: white;
+     border-radius: 5px;
+     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+     z-index: 1000;
+     opacity: 0;
+     transition: opacity 0.3s ease-in-out;
+   }
+   
+   .notification.show {
+     opacity: 1;
+   }
+
+   .notification.error {
+     background-color: #dc3545;
+   }
+
+   .notification.warning {
+     background-color: #ffc107;
+     color: #000;
+   }
+
+   .notification.info {
+     background-color: #0dcaf0;
+   }
+   
+   .sidebar {
+     position: fixed;
+     top: 0;
+     bottom: 0;
+     left: 0;
+     z-index: 100;
+     padding: 48px 0 0;
+     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+     background-color: #f8f9fa;
+   }
+   
+   .sidebar-sticky {
+     position: relative;
+     top: 0;
+     height: calc(100vh - 48px);
+     padding-top: .5rem;
+     overflow-x: hidden;
+     overflow-y: auto;
+   }
+   
+   .sidebar .nav-link {
+     font-weight: 500;
+     color: #333;
+     padding: 0.5rem 1rem;
+   }
+   
+   .sidebar .nav-link.active {
+     color: #0d6efd;
+   }
+   
+   .sidebar .nav-link:hover {
+     color: #0d6efd;
+   }
+   
+   .sidebar-heading {
+     font-size: .75rem;
+     text-transform: uppercase;
+     padding: 0.5rem 1rem;
+     color: #6c757d;
+   }
+   
+   .main-content {
+     margin-left: 240px;
+     padding: 20px;
+   }
+   
+   @media (max-width: 767.98px) {
+     .sidebar {
+       position: static;
+       padding: 0;
+       box-shadow: none;
+     }
+     
+     .main-content {
+       margin-left: 0;
+     }
+   }
+
+  /* Existing styles */
+  /* ... */
+  
+  .notifications-container {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+  
+  .notification-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border-left: 4px solid #0d6efd;
+  }
+  
+  .notification-item.success {
+    background-color: #d1e7dd;
+    border-left-color: #198754;
+  }
+  
+  .notification-item.error {
+    background-color: #f8d7da;
+    border-left-color: #dc3545;
+  }
+  
+  .notification-item.warning {
+    background-color: #fff3cd;
+    border-left-color: #ffc107;
+  }
+  
+  .notification-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+  }
+  
+  .notification-message {
+    font-weight: 500;
+  }
+</style>
+ <script>
+   console.log('Head script loaded');
+  
+  // Check if window.api is available but don't display it on the page
+  window.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM content loaded event fired');
+    
+    if (window.api) {
+      console.log('API methods available:', Object.keys(window.api));
+      // API is available, but we don't show the methods on the page anymore
+    } else {
+      console.error('API not available!');
+      // Only show an error if the API is not available
+      const messageDiv = document.createElement('div');
+      messageDiv.style.padding = '10px';
+      messageDiv.style.backgroundColor = '#ffdddd';
+      messageDiv.style.margin = '10px';
+      messageDiv.style.border = '1px solid #ccc';
+      messageDiv.textContent = 'ERROR: API is not available! Check preload.js configuration.';
+      document.body.insertBefore(messageDiv, document.body.firstChild);
+    }
+  });
+</script>
+</head>
+<body>
+ <div class="container-fluid">
+   <div class="row">
+     <!-- Sidebar -->
+     <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+  <div class="sidebar-sticky">
+    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1">
+      <span>IT Support Assistant</span>
+    </h6>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
+          Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#diagnostics" data-bs-toggle="tab">
+          Diagnostics
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#system" data-bs-toggle="tab">
+          System Info
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#performance" data-bs-toggle="tab">
+          Performance
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#network" data-bs-toggle="tab">
+          Network
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#storage" data-bs-toggle="tab">
+          Storage
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#processes" data-bs-toggle="tab">
+          Processes
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#hardware" data-bs-toggle="tab">
+          Hardware
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#security" data-bs-toggle="tab">
+          Security
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#scheduler" data-bs-toggle="tab">
+          Scheduler
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#reports" data-bs-toggle="tab">
+          Reports
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#network-monitor" data-bs-toggle="tab">
+          Network Monitor
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#software-updates" data-bs-toggle="tab">
+          Software Updates
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#disk-analyzer" data-bs-toggle="tab">
+          Disk Analyzer
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#log-analyzer" data-bs-toggle="tab">
+          Log Analyzer
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#startup-manager" data-bs-toggle="tab">
+          Startup Manager
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#notifications" data-bs-toggle="tab">
+          Notifications
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#test" data-bs-toggle="tab">
+          Test
+        </a>
+      </li>
+    </ul>
+    
+    <!-- Add dark mode toggle in the sidebar -->
+    <div class="px-3 mt-4 mb-2">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="darkModeToggle">
+        <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+      </div>
+    </div>
+    
+    <!-- Add Export/Import Settings buttons to the sidebar -->
+    <div class="px-3 mt-4">
+      <div class="d-grid gap-2">
+        <button id="export-settings-btn" class="btn btn-sm btn-outline-primary">Export Settings</button>
+        <button id="import-settings-btn" class="btn btn-sm btn-outline-secondary">Import Settings</button>
+      </div>
+    </div>
+  </div>
+</nav>
+     
+     <!-- Main content -->
+     <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4 main-content">
+       <div class="tab-content">
+         <!-- Dashboard Tab -->
+         <div class="tab-pane fade show active" id="dashboard">
+           <h1 class="mb-4">Dashboard</h1>
+           
+           <!-- Quick Actions -->
+           <div class="card mb-4">
+             <div class="card-header">Quick Actions</div>
+             <div class="card-body">
+               <div class="row">
+                 <div class="col-md-3 mb-3">
+                   <button id="run-diagnostics-btn" class="btn btn-primary w-100">Run Diagnostics</button>
+                 </div>
+                 <div class="col-md-3 mb-3">
+                   <button id="clean-cache-btn" class="btn btn-warning w-100">Clean Cache</button>
+                 </div>
+                 <div class="col-md-3 mb-3">
+                   <button id="scan-vulnerabilities-btn" class="btn btn-danger w-100">Security Scan</button>
+                 </div>
+                 <div class="col-md-3 mb-3">
+                   <button id="generate-report-btn" class="btn btn-success w-100">Generate Report</button>
+                 </div>
+               </div>
+             </div>
+           </div>
+           
+           <!-- System Overview -->
+           <div class="row">
+             <div class="col-md-6">
+               <div class="card">
+                 <div class="card-header">System Overview</div>
+                 <div class="card-body">
+                   <div id="dashboard-system-info">
+                     <p>Loading system information...</p>
+                   </div>
+                 </div>
+               </div>
+             </div>
+             
+             <div class="col-md-6">
+               <div class="card">
+                 <div class="card-header">Performance Overview</div>
+                 <div class="card-body">
+                   <div id="dashboard-performance">
+                     <p>Loading performance metrics...</p>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+           
+           <!-- Recent Issues -->
+           <div class="card mt-4">
+             <div class="card-header">Recent Issues</div>
+             <div class="card-body">
+               <div id="dashboard-issues">
+                 <p>No issues detected. Run diagnostics to check for problems.</p>
+               </div>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Diagnostics Tab -->
+         <div class="tab-pane fade" id="diagnostics">
+           <h1 class="mb-4">Automated Diagnostics</h1>
+           
+           <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>System Diagnostics</span>
+               <button id="diagnostics-run-btn" class="btn btn-sm btn-primary">Run Diagnostics</button>
+             </div>
+             <div class="card-body">
+               <div id="diagnostics-status">
+                 <p>Click "Run Diagnostics" to check your system for issues.</p>
+               </div>
+               <div id="diagnostics-results" class="mt-4">
+                 <!-- Diagnostic results will be displayed here -->
+               </div>
+             </div>
+           </div>
+         
+         <!-- System Info Tab -->
+         <div class="tab-pane fade" id="system">
+           <h1 class="mb-4">System Information</h1>
+           
+           <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>System Information</span>
+               <button id="refresh-system-info" class="btn btn-sm btn-light">Refresh</button>
+             </div>
+             <div class="card-body">
+               <div id="system-info-content">
+                 <p>Loading system information...</p>
+               </div>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Performance Tab -->
+         <div class="tab-pane fade" id="performance">
+           <h1 class="mb-4">Performance Monitoring</h1>
+           
+           <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>Performance Metrics</span>
+               <button id="refresh-performance" class="btn btn-sm btn-light">Refresh</button>
+             </div>
+             <div class="card-body">
+               <div id="performance-metrics-content">
+                 <p>Loading performance metrics...</p>
+               </div>
+               
+               <div class="mt-4">
+                 <h5>Historical Performance</h5>
+                 <div class="chart-container">
+                   <canvas id="performance-chart"></canvas>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Network Tab -->
+         <div class="tab-pane fade" id="network">
+           <h1 class="mb-4">Network Diagnostics</h1>
+           
+           <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>Network Information</span>
+               <div>
+                 <button id="detect-vpn" class="btn btn-sm btn-info me-2">Detect VPN</button>
+                 <button id="run-speed-test" class="btn btn-sm btn-primary">Speed Test</button>
+               </div>
+             </div>
+             <div class="card-body">
+               <div id="network-info-content">
+                 <p>Loading network information...</p>
+               </div>
+               <div id="vpn-status" class="mt-3"></div>
+               <div id="speed-test-results" class="mt-3"></div>
+             </div>
+           </div>
+           
+           <div class="card mt-4">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>Network Traffic</span>
+               <div>
+                 <button id="start-monitoring" class="btn btn-sm btn-success me-2">Start Monitoring</button>
+                 <button id="stop-monitoring" class="btn btn-sm btn-danger" disabled>Stop Monitoring</button>
+               </div>
+             </div>
+             <div class="card-body">
+               <div id="network-traffic-content">
+                 <p>Click "Start Monitoring" to begin tracking network traffic.</p>
+               </div>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Storage Tab -->
+         <div class="tab-pane fade" id="storage">
+  <h1 class="mb-4">Storage Management</h1>
+  
+  <div class="card">
+    <div class="card-header">Cache Management</div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <button id="scan-cache" class="btn btn-primary mb-2 me-2">Scan Cache</button>
+          <button id="clean-cache" class="btn btn-warning mb-2">Clean Cache</button>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="selective-cache">
+            <label class="form-check-label" for="selective-cache">
+              Only clean user-accessible caches (skip system caches)
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card mb-3">
+        <div class="card-header">Custom Cache Paths</div>
+        <div class="card-body">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" id="custom-cache-path" placeholder="Enter custom cache path">
+            <button class="btn btn-outline-secondary" type="button" id="add-custom-path">Add Path</button>
+          </div>
+          <div id="custom-cache-paths">
+            <p>No custom cache paths added.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card mb-3">
+        <div class="card-header">Schedule Cache Cleaning</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label for="cleaning-frequency" class="form-label">Frequency</label>
+              <select class="form-select" id="cleaning-frequency">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="cleaning-day" class="form-label">Day</label>
+              <select class="form-select" id="cleaning-day">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="cleaning-hour" class="form-label">Hour</label>
+              <select class="form-select" id="cleaning-hour">
+                <option value="0">12 AM</option>
+                <option value="1">1 AM</option>
+                <option value="2">2 AM</option>
+                <option value="3">3 AM</option>
+                <option value="4">4 AM</option>
+                <option value="12">12 PM</option>
+                <option value="15">3 PM</option>
+                <option value="18">6 PM</option>
+                <option value="21">9 PM</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="cleaning-minute" class="form-label">Minute</label>
+              <select class="form-select" id="cleaning-minute">
+                <option value="0">00</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+         
+         <!-- Processes Tab -->
+         <div class="tab-pane fade" id="processes">
+           <h1 class="mb-4">Running Processes</h1>
+           
+           <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>Active Processes</span>
+               <button id="refresh-processes" class="btn btn-sm btn-light">Refresh</button>
+             </div>
+             <div class="card-body">
+               <div id="processes-content">
+                 <p>Loading active processes...</p>
+               </div>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Hardware Tab -->
+         <div class="tab-pane fade" id="hardware">
+           <h1 class="mb-4">Hardware Information</h1>
+           
+           <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>Hardware Metrics</span>
+               <button id="refresh-hardware" class="btn btn-sm btn-light">Refresh</button>
+             </div>
+             <div class="card-body">
+               <div id="hardware-metrics-content">
+                 <p>Loading hardware metrics...</p>
+               </div>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Security Tab -->
+         <div class="tab-pane fade" id="security">
+           <h1 class="mb-4">Security Center</h1>
+           
+           <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>Security Status</span>
+               <button id="run-security-scan" class="btn btn-sm btn-danger">Run Scan</button>
+             </div>
+             <div class="card-body">
+               <div id="security-status-content">
+                 <p>Checking security status...</p>
+               </div>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Scheduler Tab -->
+         <div class="tab-pane fade" id="scheduler">
+           <h1 class="mb-4">Task Scheduler</h1>
+           
+           <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>Scheduled Tasks</span>
+               <button id="add-scheduled-task" class="btn btn-sm btn-primary">Add Task</button>
+             </div>
+             <div class="card-body">
+               <div id="scheduled-tasks-content">
+                 <p>Loading scheduled tasks...</p>
+               </div>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Reports Tab -->
+         <div class="tab-pane fade" id="reports">
+           <h1 class="mb-4">Reporting</h1>
+           
+           <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+               <span>Generate Report</span>
+               <button id="generate-system-report" class="btn btn-sm btn-success">Generate</button>
+             </div>
+             <div class="card-body">
+               <div id="reports-content">
+                 <p>Click "Generate" to create a system report.</p>
+               </div>
+             </div>
+           </div>
+         </div>
+<div class="tab-pane fade" id="network-monitor">
+  <h1 class="mb-4">Network Monitor</h1>
+  
+  <div class="card">
+    <div class="card-header">Network Usage</div>
+    <div class="card-body">
+      <p>Display real-time network usage data here.</p>
+    </div>
+  </div>
+</div>
+<div class="tab-pane fade" id="software-updates">
+  <h1 class="mb-4">Software Updates</h1>
+  
+  <div class="card">
+    <div class="card-header">Available Updates</div>
+    <div class="card-body">
+      <p>Check for and install software updates.</p>
+    </div>
+  </div>
+</div>
+<div class="tab-pane fade" id="disk-analyzer">
+  <h1 class="mb-4">Disk Analyzer</h1>
+  
+  <div class="card">
+    <div class="card-header">Disk Usage</div>
+    <div class="card-body">
+      <p>Analyze disk usage and identify large files.</p>
+    </div>
+  </div>
+</div>
+<div class="tab-pane fade" id="log-analyzer">
+  <h1 class="mb-4">Log Analyzer</h1>
+  
+  <div class="card">
+    <div class="card-header">System Logs</div>
+    <div class="card-body">
+      <p>Analyze system logs for errors and warnings.</p>
+    </div>
+  </div>
+</div>
+<div class="tab-pane fade" id="startup-manager">
+  <h1 class="mb-4">Startup Manager</h1>
+  
+  <div class="card">
+    <div class="card-header">Startup Programs</div>
+    <div class="card-body">
+      <p>Manage programs that run on startup.</p>
+    </div>
+  </div>
+</div>
+<div class="tab-pane fade" id="notifications">
+  <h1 class="mb-4">Notifications</h1>
+  
+  <div class="card">
+    <div class="card-header">Recent Notifications</div>
+    <div class="card-body">
+      <div class="notifications-container">
+        <div class="notification-item success">
+          <div class="notification-time">2024-01-27 10:00 AM</div>
+          <div class="notification-message">System is running smoothly.</div>
+        </div>
+        <div class="notification-item warning">
+          <div class="notification-time">2024-01-26 05:30 PM</div>
+          <div class="notification-message">High CPU usage detected.</div>
+        </div>
+        <div class="notification-item error">
+          <div class="notification-time">2024-01-25 09:15 AM</div>
+          <div class="notification-message">Disk space is running low.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tab-pane fade" id="test">
+  <h1 class="mb-4">Test Functions</h1>
+  
+  <div class="card">
+    <div class="card-header">API Test Functions</div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <button id="test-system-info" class="btn btn-primary w-100">Test System Info</button>
+        </div>
+        <div class="col-md-3 mb-3">
+          <button id="test-network-info" class="btn btn-info w-100">Test Network Info</button>
+        </div>
+        <div class="col-md-3 mb-3">
+          <button id="test-performance" class="btn btn-warning w-100">Test Performance</button>
+        </div>
+        <div class="col-md-3 mb-3">
+          <button id="test-cache" class="btn btn-success w-100">Test Cache</button>
+        </div>
+      </div>
+      <div id="test-result" class="mt-3 p-3 border rounded bg-light">
+        <p>Test results will appear here...</p>
+      </div>
+    </div>
+  </div>
+</div>
+       </div>
+     </main>
+   </div>
+ </div>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+ <script>
+   document.addEventListener('DOMContentLoaded', () => {
+     // Function to update system information on the dashboard
+     async function updateDashboardSystemInfo() {
+       const dashboardSystemInfo = document.getElementById('dashboard-system-info');
+       if (dashboardSystemInfo) {
+         dashboardSystemInfo.innerHTML = '<p>Loading system information...</p>';
+         try {
+           const systemInfo = await window.api.getSystemInfo();
+           dashboardSystemInfo.innerHTML = `
+             <p><strong>Operating System:</strong> ${systemInfo.osPlatform} ${systemInfo.osVersion}</p>
+             <p><strong>CPU:</strong> ${systemInfo.cpuModel}</p>
+             <p><strong>Memory:</strong> ${systemInfo.totalMemory}</p>
+           `;
+         } catch (error) {
+           console.error('Error fetching system info:', error);
+           dashboardSystemInfo.innerHTML = '<p>Failed to load system information.</p>';
+         }
+       }
+     }
+     
+     // Function to update performance metrics on the dashboard
+     async function updateDashboardPerformance() {
+       const dashboardPerformance = document.getElementById('dashboard-performance');
+       if (dashboardPerformance) {
+         dashboardPerformance.innerHTML = '<p>Loading performance metrics...</p>';
+         try {
+           const performanceMetrics = await window.api.getPerformanceMetrics();
+           dashboardPerformance.innerHTML = `
+             <p><strong>CPU Usage:</strong> ${performanceMetrics.cpuUsage}%</p>
+             <p><strong>Memory Usage:</strong> ${performanceMetrics.memoryUsage}%</p>
+           `;
+         } catch (error) {
+           console.error('Error fetching performance metrics:', error);
+           dashboardPerformance.innerHTML = '<p>Failed to load performance metrics.</p>';
+         }
+       }
+     }
+     
+     // Function to simulate fetching recent issues
+     async function updateDashboardIssues() {
+       const dashboardIssues = document.getElementById('dashboard-issues');
+       if (dashboardIssues) {
+         dashboardIssues.innerHTML = '<p>Loading recent issues...</p>';
+         // Simulate fetching issues
+         setTimeout(() => {
+           dashboardIssues.innerHTML = `
+             <div class="issue-item high">High CPU Usage</div>
+             <div class="issue-item medium">Low Disk Space</div>
+             <div class="issue-item low">Outdated Drivers</div>
+           `;
+         }, 1500);
+       }
+     }
+     
+     // Call the update functions when the dashboard tab is active
+     const dashboardTab = document.querySelector('a[href="#dashboard"]');
+     if (dashboardTab) {
+       dashboardTab.addEventListener('shown.bs.tab', () => {
+         updateDashboardSystemInfo();
+         updateDashboardPerformance();
+         updateDashboardIssues();
+       });
+     }
+     
+     // Initial load if the dashboard is the active tab
+     if (dashboardTab && dashboardTab.classList.contains('active')) {
+       updateDashboardSystemInfo();
+       updateDashboardPerformance();
+       updateDashboardIssues();
+     }
+     
+     // Diagnostics Tab functionality
+     const diagnosticsRunBtn = document.getElementById('diagnostics-run-btn');
+     if (diagnosticsRunBtn) {
+       diagnosticsRunBtn.addEventListener('click', async () => {
+         const diagnosticsStatus = document.getElementById('diagnostics-status');
+         const diagnosticsResults = document.getElementById('diagnostics-results');
+         
+         diagnosticsStatus.textContent = 'Running diagnostics...';
+         diagnosticsResults.innerHTML = '';
+         
+         try {
+           const results = await window.api.runDiagnostics();
+           diagnosticsStatus.textContent = 'Diagnostics complete.';
+           
+           // Display results
+           results.forEach(result => {
+             const resultDiv = document.createElement('div');
+             resultDiv.textContent = `${result.name}: ${result.status}`;
+             diagnosticsResults.appendChild(resultDiv);
+           });
+         } catch (error) {
+           console.error('Error running diagnostics:', error);
+           diagnosticsStatus.textContent = 'Diagnostics failed.';
+           diagnosticsResults.textContent = `Error: ${error.message}`;
+         }
+       });
+     }
+     
+     // System Info Tab functionality
+     const systemInfoContent = document.getElementById('system-info-content');
+     const refreshSystemInfoBtn = document.getElementById('refresh-system-info');
+     
+     async function loadSystemInfo() {
+       systemInfoContent.innerHTML = '<p>Loading system information...</p>';
+       try {
+         const systemInfo = await window.api.getSystemInfo();
+         systemInfoContent.innerHTML = `
+           <div class="system-info-item">
+             <span class="system-info-label">Operating System:</span>
+             <span>${systemInfo.osPlatform} ${systemInfo.osVersion}</span>
+           </div>
+           <div class="system-info-item">
+             <span class="system-info-label">CPU:</span>
+             <span>${systemInfo.cpuModel}</span>
+           </div>
+           <div class="system-info-item">
+             <span class="system-info-label">Memory:</span>
+             <span>${systemInfo.totalMemory}</span>
+           </div>
+           <div class="system-info-item">
+             <span class="system-info-label">Architecture:</span>
+             <span>${systemInfo.osArchitecture}</span>
+           </div>
+           <div class="system-info-item">
+             <span class="system-info-label">Hostname:</span>
+             <span>${systemInfo.hostname}</span>
+           </div>
+           <div class="system-info-item">
+             <span class="system-info-label">Uptime:</span>
+             <span>${systemInfo.uptime} seconds</span>
+           </div>
+         `;
+       } catch (error) {
+         console.error('Error fetching system info:', error);
+         systemInfoContent.innerHTML = '<p>Failed to load system information.</p>';
+       }
+     }
+     
+     if (refreshSystemInfoBtn && systemInfoContent) {
+       loadSystemInfo(); // Load on initial page load
+       refreshSystemInfoBtn.addEventListener('click', loadSystemInfo);
+     }
+     
+     // Performance Tab functionality
+     const performanceMetricsContent = document.getElementById('performance-metrics-content');
+     const refreshPerformanceBtn = document.getElementById('refresh-performance');
+     const performanceChartCanvas = document.getElementById('performance-chart');
+     let performanceChart;
+     
+     async function loadPerformanceMetrics() {
+       performanceMetricsContent.innerHTML = '<p>Loading performance metrics...</p>';
+       try {
+         const performanceMetrics = await window.api.getPerformanceMetrics();
+         performanceMetricsContent.innerHTML = `
+           <div class="system-info-item">
+             <span class="system-info-label">CPU Usage:</span>
+             <span>${performanceMetrics.cpuUsage}%</span>
+           </div>
+           <div class="system-info-item">
+             <span class="system-info-label">Memory Usage:</span>
+             <span>${performanceMetrics.memoryUsage}%</span>
+           </div>
+         `;
+         
+         // Update chart data
+         updateChart(performanceMetrics.cpuUsage, performanceMetrics.memoryUsage);
+       } catch (error) {
+         console.error('Error fetching performance metrics:', error);
+         performanceMetricsContent.innerHTML = '<p>Failed to load performance metrics.</p>';
+       }
+     }
+     
+     function initializeChart() {
+       performanceChart = new Chart(performanceChartCanvas, {
+         type: 'line',
+         data: {
+           labels: [],
+           datasets: [
+             {
+               label: 'CPU Usage (%)',
+               data: [],
+               borderColor: 'rgba(255, 99, 132, 1)',
+               borderWidth: 1,
+               fill: false
+             },
+             {
+               label: 'Memory Usage (%)',
+               data: [],
+               borderColor: 'rgba(54, 162, 235, 1)',
+               borderWidth: 1,
+               fill: false
+             }
+           ]
+         },
+         options: {
+           scales: {
+             y: {
+               beginAtZero: true,
+               max: 100
+             }
+           }
+         }
+       });
+     }
+     
+     function updateChart(cpuUsage, memoryUsage) {
+       const now = new Date();
+       const timeLabel = now.toLocaleTimeString();
+       
+       performanceChart.data.labels.push(timeLabel);
+       performanceChart.data.datasets[0].data.push(cpuUsage);
+       performanceChart.data.datasets[1].data.push(memoryUsage);
+       
+       // Keep only the latest 10 data points
+       if (performanceChart.data.labels.length > 10) {
+         performanceChart.data.labels.shift();
+         performanceChart.data.datasets.forEach((dataset) => {
+           dataset.data.shift();
+         });
+       }
+       
+       performanceChart.update();
+     }
+     
+     if (refreshPerformanceBtn && performanceMetricsContent && performanceChartCanvas) {
+       initializeChart();
+       loadPerformanceMetrics(); // Load on initial page load
+       refreshPerformanceBtn.addEventListener('click', loadPerformanceMetrics);
+     }
+     
+     // Network Tab functionality
+     const networkInfoContent = document.getElementById('network-info-content');
+     const detectVpnBtn = document.getElementById('detect-vpn');
+     const runSpeedTestBtn = document.getElementById('run-speed-test');
+     const vpnStatusDiv = document.getElementById('vpn-status');
+     const speedTestResultsDiv = document.getElementById('speed-test-results');
+     
+     async function loadNetworkInfo() {
+       networkInfoContent.innerHTML = '<p>Loading network information...</p>';
+       try {
+         const networkInfo = await window.api.getNetworkInterfaces();
+         let networkInfoHtml = '';
+         networkInfo.forEach(iface => {
+           networkInfoHtml += `
+             <div class="network-interface">
+               <p><strong>Name:</strong> ${iface.name}</p>
+               <p><strong>Address:</strong> ${iface.address}</p>
+               <p><strong>Netmask:</strong> ${iface.netmask}</p>
+               <p><strong>Family:</strong> ${iface.family}</p>
+               <p><strong>Internal:</strong> ${iface.internal ? 'Yes' : 'No'}</p>
+             </div>
+           `;
+         });
+         networkInfoContent.innerHTML = networkInfoHtml;
+       } catch (error) {
+         console.error('Error fetching network info:', error);
+         networkInfoContent.innerHTML = '<p>Failed to load network information.</p>';
+       }
+     }
+     
+     if (networkInfoContent) {
+       loadNetworkInfo(); // Load on initial page load
+     }
+     
+     if (detectVpnBtn && vpnStatusDiv) {
+       detectVpnBtn.addEventListener('click', async () => {
+         vpnStatusDiv.textContent = 'Detecting VPN...';
+         try {
+           const vpnDetected = await window.api.detectVPN();
+           vpnStatusDiv.textContent = vpnDetected ? 'VPN Detected' : 'No VPN Detected';
+         } catch (error) {
+           console.error('Error detecting VPN:', error);
+           vpnStatusDiv.textContent = 'Error detecting VPN.';
+         }
+       });
+     }
+     
+     if (runSpeedTestBtn && speedTestResultsDiv) {
+       runSpeedTestBtn.addEventListener('click', async () => {
+         speedTestResultsDiv.textContent = 'Running speed test...';
+         try {
+           const speedTestResult = await window.api.runSpeedTest();
+           speedTestResultsDiv.innerHTML = `
+             <p><strong>Download Speed:</strong> ${speedTestResult.download} Mbps</p>
+             <p><strong>Upload Speed:</strong> ${speedTestResult.upload} Mbps</p>
+             <p><strong>Ping:</strong> ${speedTestResult.ping} ms</p>
+           `;
+         } catch (error) {
+           console.error('Error running speed test:', error);
+           speedTestResultsDiv.textContent = 'Error running speed test.';
+         }
+       });
+     }
+     
+     // Storage Tab functionality
+     const scanCacheBtn = document.getElementById('scan-cache');
+     const cleanCacheBtn = document.getElementById('clean-cache');
+     const selectiveCacheCheckbox = document.getElementById('selective-cache');
+     const customCachePathInput = document.getElementById('custom-cache-path');
+     const addCustomPathBtn = document.getElementById('add-custom-path');
+     const customCachePathsDiv = document.getElementById('custom-cache-paths');
+     const cleaningFrequencySelect = document.getElementById('cleaning-frequency');
+     const cleaningDaySelect = document.getElementById('cleaning-day');
+     const cleaningHourSelect = document.getElementById('cleaning-hour');
+     const cleaningMinuteSelect = document.getElementById('cleaning-minute');
+     
+     if (scanCacheBtn && cleanCacheBtn) {
+       scanCacheBtn.addEventListener('click', async () => {
+         try {
+           const cacheSize = await window.api.getCacheSize();
+           alert(`Cache size: ${cacheSize} MB`);
+         } catch (error) {
+           console.error('Error scanning cache:', error);
+           alert('Error scanning cache.');
+         }
+       });
+       
+       cleanCacheBtn.addEventListener('click', async () => {
+         const selectiveClean = selectiveCacheCheckbox.checked;
+         try {
+           await window.api.cleanCache(selectiveClean);
+           alert('Cache cleaned successfully.');
+         } catch (error) {
+           console.error('Error cleaning cache:', error);
+           alert('Error cleaning cache.');
+         }
+       });
+     }
+     
+     if (addCustomPathBtn && customCachePathInput && customCachePathsDiv) {
+       addCustomPathBtn.addEventListener('click', () => {
+         const path = customCachePathInput.value.trim();
+         if (path) {
+           const pathElement = document.createElement('div');
+           pathElement.textContent = path;
+           customCachePathsDiv.appendChild(pathElement);
+           customCachePathInput.value = '';
+         }
+       });
+     }
+     
+     if (cleaningFrequencySelect && cleaningDaySelect && cleaningHourSelect && cleaningMinuteSelect) {
+       cleaningFrequencySelect.addEventListener('change', () => {
+         // Handle frequency change
+       });
+       cleaningDaySelect.addEventListener('change', () => {
+         // Handle day change
+       });
+       cleaningHourSelect.addEventListener('change', () => {
+         // Handle hour change
+       });
+       cleaningMinuteSelect.addEventListener('change', () => {
+         // Handle minute change
+       });
+     }
+     
+     // Processes Tab functionality
+     const processesContent = document.getElementById('processes-content');
+     const refreshProcessesBtn = document.getElementById('refresh-processes');
+     
+     async function loadProcesses() {
+       processesContent.innerHTML = '<p>Loading active processes...</p>';
+       try {
+         const processes = await window.api.getProcesses();
+         let processesHtml = '<table class="table table-striped">';
+         processesHtml += '<thead><tr><th>Name</th><th>PID</th><th>CPU Usage</th><th>Memory Usage</th></tr></thead>';
+         processesHtml += '<tbody>';
+         processes.forEach(process => {
+           processesHtml += `<tr><td>${process.name}</td><td>${process.pid}</td><td>${process.cpu}</td><td>${process.memory}</td></tr>`;
+         });
+         processesHtml += '</tbody></table>';
+         processesContent.innerHTML = processesHtml;
+       } catch (error) {
+         console.error('Error fetching processes:', error);
+         processesContent.innerHTML = '<p>Failed to load active processes.</p>';
+       }
+     }
+     
+     if (refreshProcessesBtn && processesContent) {
+       loadProcesses(); // Load on initial page load
+       refreshProcessesBtn.addEventListener('click', loadProcesses);
+     }
+     
+     // Hardware Tab functionality
+     const hardwareMetricsContent = document.getElementById('hardware-metrics-content');
+     const refreshHardwareBtn = document.getElementById('refresh-hardware');
+     
+     async function loadHardwareMetrics() {
+       hardwareMetricsContent.innerHTML = '<p>Loading hardware metrics...</p>';
+       try {
+         const hardwareMetrics = await window.api.getHardwareMetrics();
+         hardwareMetricsContent.innerHTML = `
+           <div class="hardware-metric">
+             <span class="hardware-metric-icon"><i class="fas fa-microchip"></i></span>
+             <div>
+               <div class="hardware-metric-value">${hardwareMetrics.cpuTemperature}°C</div>
+               <div class="hardware-metric-label">CPU Temperature</div>
+             </div>
+           </div>
+           <div class="hardware-metric">
+             <span class="hardware-metric-icon"><i class="fas fa-fan"></i></span>
+             <div>
+               <div class="hardware-metric-value">${hardwareMetrics.fanSpeed} RPM</div>
+               <div class="hardware-metric-label">Fan Speed</div>
+             </div>
+           </div>
+         `;
+       } catch (error) {
+         console.error('Error fetching hardware metrics:', error);
+         hardwareMetricsContent.innerHTML = '<p>Failed to load hardware metrics.</p>';
+       }
+     }
+     
+     if (refreshHardwareBtn && hardwareMetricsContent) {
+       loadHardwareMetrics(); // Load on initial page load
+       refreshHardwareBtn.addEventListener('click', loadHardwareMetrics);
+     }
+     
+     // Security Tab functionality
+     const securityStatusContent = document.getElementById('security-status-content');
+     const runSecurityScanBtn = document.getElementById('run-security-scan');
+     
+     async function runSecurityScan() {
+       securityStatusContent.innerHTML = '<p>Running security scan...</p>';
+       try {
+         const securityStatus = await window.api.runSecurityScan();
+         securityStatusContent.innerHTML = `
+           <p><strong>Firewall Status:</strong> ${securityStatus.firewallEnabled ? 'Enabled' : 'Disabled'}</p>
+           <p><strong>Antivirus Status:</strong> ${securityStatus.antivirusEnabled ? 'Enabled' : 'Disabled'}</p>
+         `;
+       } catch (error) {
+         console.error('Error running security scan:', error);
+         securityStatusContent.innerHTML = '<p>Failed to run security scan.</p>';
+       }
+     }
+     
+     if (runSecurityScanBtn && securityStatusContent) {
+       runSecurityScanBtn.addEventListener('click', runSecurityScan);
+     }
+     
+     // Scheduler Tab functionality
+     const scheduledTasksContent = document.getElementById('scheduled-tasks-content');
+     const addScheduledTaskBtn = document.getElementById('add-scheduled-task');
+     
+     async function loadScheduledTasks() {
+       scheduledTasksContent.innerHTML = '<p>Loading scheduled tasks...</p>';
+       try {
+         const scheduledTasks = await window.api.getScheduledTasks();
+         let scheduledTasksHtml = '<table class="table table-striped">';
+         scheduledTasksHtml += '<thead><tr><th>Name</th><th>Frequency</th><th>Next Run</th></tr></thead>';
+         scheduledTasksHtml += '<tbody>';
+         scheduledTasks.forEach(task => {
+           scheduledTasksHtml += `<tr><td>${task.name}</td><td>${task.frequency}</td><td>${task.nextRun}</td></tr>`;
+         });
+         scheduledTasksHtml += '</tbody></table>';
+         scheduledTasksContent.innerHTML = scheduledTasksHtml;
+       } catch (error) {
+         console.error('Error fetching scheduled tasks:', error);
+         scheduledTasksContent.innerHTML = '<p>Failed to load scheduled tasks.</p>';
+       }
+     }
+     
+     if (addScheduledTaskBtn && scheduledTasksContent) {
+       loadScheduledTasks(); // Load on initial page load
+       addScheduledTaskBtn.addEventListener('click', () => {
+         // Implement add task functionality
+       });
+     }
+     
+     // Reports Tab functionality
+     const reportsContent = document.getElementById('reports-content');
+     const generateSystemReportBtn = document.getElementById('generate-system-report');
+     
+     async function generateSystemReport() {
+       reportsContent.innerHTML = '<p>Generating system report...</p>';
+       try {
+         const report = await window.api.generateSystemReport();
+         reportsContent.innerHTML = `<p>Report generated successfully. <a href="${report.path}" target="_blank">View Report</a></p>`;
+       } catch (error) {
+         console.error('Error generating system report:', error);
+         reportsContent.innerHTML = '<p>Failed to generate system report.</p>';
+       }
+     }
+     
+     if (generateSystemReportBtn && reportsContent) {
+       generateSystemReportBtn.addEventListener('click', generateSystemReport);
+     }
+
+     // Dark Mode Toggle
+     const darkModeToggle = document.getElementById('darkModeToggle');
+
+     if (darkModeToggle) {
+       darkModeToggle.addEventListener('change', () => {
+         if (darkModeToggle.checked) {
+           document.body.classList.add('dark-mode');
+         } else {
+           document.body.classList.remove('dark-mode');
+         }
+       });
+     }
+
+     // Test Tab functionality
+     const testSystemInfoBtn = document.getElementById('test-system-info');
+     const testNetworkInfoBtn = document.getElementById('test-network-info');
+     const testPerformanceBtn = document.getElementById('test-performance');
+     const testCacheBtn = document.getElementById('test-cache');
+     const testResultDiv = document.getElementById('test-result');
+
+     if (testSystemInfoBtn) {
+       testSystemInfoBtn.addEventListener('click', async () => {
+         testResultDiv.textContent = 'Testing System Info...';
+         try {
+           const systemInfo = await window.api.getSystemInfo();
+           testResultDiv.textContent = JSON.stringify(systemInfo, null, 2);
+         } catch (error) {
+           console.error('Error testing system info:', error);
+           testResultDiv.textContent = 'Error: ' + error.message;
+         }
+       });
+     }
+
+     if (testNetworkInfoBtn) {
+       testNetworkInfoBtn.addEventListener('click', async () => {
+         testResultDiv.textContent = 'Testing Network Info...';
+         try {
+           const networkInfo = await window.api.getNetworkInterfaces();
+           testResultDiv.textContent = JSON.stringify(networkInfo, null, 2);
+         } catch (error) {
+           console.error('Error testing network info:', error);
+           testResultDiv.textContent = 'Error: ' + error.message;
+         }
+       });
+     }
+
+     if (testPerformanceBtn) {
+       testPerformanceBtn.addEventListener('click', async () => {
+         testResultDiv.textContent = 'Testing Performance...';
+         try {
+           const performanceMetrics = await window.api.getPerformanceMetrics();
+           testResultDiv.textContent = JSON.stringify(performanceMetrics, null, 2);
+         } catch (error) {
+           console.error('Error testing performance:', error);
+           testResultDiv.textContent = 'Error: ' + error.message;
+         }
+       });
+     }
+
+     if (testCacheBtn) {
+       testCacheBtn.addEventListener('click', async () => {
+         testResultDiv.textContent = 'Testing Cache...';
+         try {
+           const cacheSize = await window.api.getCacheSize();
+           testResultDiv.textContent = `Cache Size: ${cacheSize} MB`;
+         } catch (error) {
+           console.error('Error testing cache:', error);
+           testResultDiv.textContent = 'Error: ' + error.message;
+         }
+       });
+     }
+
+     // Export/Import Settings
+     const exportSettingsBtn = document.getElementById('export-settings-btn');
+     const importSettingsBtn = document.getElementById('import-settings-btn');
+
+     if (exportSettingsBtn) {
+       exportSettingsBtn.addEventListener('click', async () => {
+         try {
+           await window.api.exportSettings();
+           alert('Settings exported successfully!');
+         } catch (error) {
+           console.error('Error exporting settings:', error);
+           alert('Error exporting settings.');
+         }
+       });
+     }
+
+     if (importSettingsBtn) {
+       importSettingsBtn.addEventListener('click', async () => {
+         try {
+           await window.api.importSettings();
+           alert('Settings imported successfully!');
+         } catch (error) {
+           console.error('Error importing settings:', error);
+           alert('Error importing settings.');
+         }
+       });
+     }
+   });
+ </script>
+<script src="test-tab.js"></script>
+</body>
+</html>
